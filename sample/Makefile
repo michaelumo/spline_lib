@@ -5,3 +5,4 @@ all:
 
 clean:
 	$(RM) sample *.o *~
+	$(RM) output.csv
