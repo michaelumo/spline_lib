@@ -3,12 +3,19 @@
 
 class Spline{
   private:
+    //cspline variables
     Matrix f;
     std::vector<double> h;
+    // bspline variables
+    std::vector<double> U;//Open Uniform Knot Vector
+    int degree = 0;
+    double B(int i, int k, double u);
   public:
     Spline();
     void cspline(Matrix &in);
+    void bspline(Matrix &in, int k);
     double calc_y(double i, Matrix &in);
+    void calc_vec(double u, Matrix &in, Matrix &vec);
 };
 
 Spline::Spline(){
@@ -50,4 +57,38 @@ double Spline::calc_y(double i, Matrix &in){
   }
   return f(j+1,0)/(6.0*h[j])*pow((i-in(0,j)),3.0)+f(j,0)/(6.0*h[j])*pow((in(0,j+1)-i),3.0)+(in(1,j+1)/h[j]-f(j+1,0)/6.0*h[j])*(i-in(0,j))+(in(1,j)/h[j]-f(j,0)/6.0*h[j])*(in(0,j+1)-i);
 }
+
+void Spline::bspline(Matrix &in, int k){//k is degree, k < in.getCols()
+  degree = k;
+  if(k >= in.getCols()){std::cout<<"Error: degree is to high! Must be k < in.getCols()"<<std::endl; return;}
+  int n = degree+in.getCols()+1;//number of knots
+  for(int i = 0; i < degree; i++){
+    U.push_back(0.0);
+  }
+  for(int i = 0; i <n-2*degree; i++){
+    U.push_back(1.0/((double)n-2*degree-1)*i);
+  }
+  for(int i = 0; i < degree; i++){
+    U.push_back(1.0);
+  }
+}
+
+void Spline::calc_vec(double u, Matrix &in, Matrix &vec){
+  for(int j = 0; j < in.getCols(); j++){
+    vec(0,0)+=in(0,j)*B(j,degree,u);
+    vec(1,0)+=in(1,j)*B(j,degree,u);
+  }
+}
+
+double Spline::B(int i, int k, double u){// k: degree, i: index of control points, u: knot
+  if(k == 0 && u >= U[i] && u < U[i+1])return 1.0;
+  else if(k == 0)return 0.;
+  double b1, b2;
+  if((U[i+k]-U[i]) == 0)b1 = 0.;
+  else b1 = (u-U[i])/(U[i+k]-U[i])*B(i,k-1,u);
+  if((U[i+k+1]-U[i+1]) == 0)b2 = 0.;
+  else b2 = (U[i+k+1]-u)/(U[i+k+1]-U[i+1])*B(i+1,k-1,u);
+  return b1+b2;
+}
+
 #endif
