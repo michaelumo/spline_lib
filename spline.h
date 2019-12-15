@@ -27,6 +27,7 @@ void Spline::cspline(Matrix &in){//type of matrix is (x,y).t()
   std::vector<double> B;
   std::vector<double> C;
   std::vector<double> D;
+  TDMA alg();
   h.clear();
   //calculate delta t
   for(int i = 0; i < in.getCols()-1; i++){
@@ -44,7 +45,7 @@ void Spline::cspline(Matrix &in){//type of matrix is (x,y).t()
     D.push_back(6.0*((in(1,i+1)-in(1,i))/h[i])-6.0*((in(1,i)-in(1,i-1))/h[i-1]));
   }
   C.push_back(0);
-  f = in.TDMA(A,B,C,D);
+  f = alg.TDMA(A,B,C,D);
 }
 
 double Spline::calc_y(double i, Matrix &in){
@@ -60,7 +61,7 @@ double Spline::calc_y(double i, Matrix &in){
 
 void Spline::bspline(Matrix &in, int k){//k is degree, k < in.getCols()
   degree = k;
-  if(k >= in.getCols()){std::cout<<"Error: degree is to high! Must be k < in.getCols()"<<std::endl; return;}
+  if(k >= in.getCols()){std::cout<<"Error: degree is to high! Must be k < "<<in.getCols()<<std::endl; return;}
   int n = degree+in.getCols()+1;//number of knots
   for(int i = 0; i < degree; i++){
     U.push_back(0.0);

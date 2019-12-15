@@ -4,6 +4,7 @@
 #include <cmath>
 #include <fstream>
 #include "matrix.h"
+#include "matrix_algorithm.h"
 #include "spline.h"
 
 int main(void){
