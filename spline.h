@@ -27,7 +27,7 @@ void Spline::cspline(Matrix &in){//type of matrix is (x,y).t()
   std::vector<double> B;
   std::vector<double> C;
   std::vector<double> D;
-  TDMA alg();
+  TDMA alg;
   h.clear();
   //calculate delta t
   for(int i = 0; i < in.getCols()-1; i++){
@@ -45,7 +45,7 @@ void Spline::cspline(Matrix &in){//type of matrix is (x,y).t()
     D.push_back(6.0*((in(1,i+1)-in(1,i))/h[i])-6.0*((in(1,i)-in(1,i-1))/h[i-1]));
   }
   C.push_back(0);
-  f = alg.TDMA(A,B,C,D);
+  f = alg.tdma(A,B,C,D);
 }
 
 double Spline::calc_y(double i, Matrix &in){
