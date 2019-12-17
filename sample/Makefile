@@ -1,7 +1,6 @@
-current = sparsematrix.cpp
 
 all:
-	g++ -g3 -o sample main.cpp -I$(HOME)/include -std=gnu++11 -I $(HOME)/include/matrix.h
+	g++ -g3 -o sample main.cpp -I$(HOME)/include -std=gnu++11
 
 clean:
 	$(RM) sample *.o *~
