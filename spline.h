@@ -12,7 +12,8 @@ class Spline{
     double B(int i, int k, double u);
   public:
     std::vector<float> point;
-    Matrix pos, vel, accel;
+    std::vector<float> velocity;
+    std::vector<float> accel;
     Spline();
     void cspline(Matrix &in);
     void bspline(Matrix &in, int k);
@@ -29,6 +30,8 @@ void Spline::cspline(Matrix &in){//type of matrix is (t,x,y,z..).t()
   int num = in.getRows();
   TDMA alg;
   point = std::vector<float>(num);
+  velocity = std::vector<float>(num);
+  accel = std::vector<float>(num);
   for(int n = 1; n < num; n++){
   	std::vector<double> A;
     std::vector<double> B;
@@ -64,7 +67,9 @@ void Spline::calc_point(double i, Matrix &in){
     }
   }
   for(int n = 0; n < in.getRows()-1; n++){
-    point.insert(point.begin()+n, f[n](j+1,0)/(6.0*h[j])*pow((i-in(0,j)),3.0)+f[n](j,0)/(6.0*h[j])*pow((in(0,j+1)-i),3.0)+(in(n+1,j+1)/h[j]-f[n](j+1,0)/6.0*h[j])*(i-in(0,j))+(in(n+1,j)/h[j]-f[n](j,0)/6.0*h[j])*(in(0,j+1)-i));
+    point.insert(point.begin()+n, f[n](j+1)/(6.0*h[j])*pow((i-in(0,j)),3.0)+f[n](j)/(6.0*h[j])*pow((in(0,j+1)-i),3.0)+(in(n+1,j+1)/h[j]-f[n](j+1)/6.0*h[j])*(i-in(0,j))+(in(n+1,j)/h[j]-f[n](j)/6.0*h[j])*(in(0,j+1)-i));
+    velocity.insert(velocity.begin()+n, f[n](j+1)/(2.0*h[j])*pow((i-in(0,j)),2.0)-f[n](j)/(2.0*h[j])*pow((in(0,j+1)-i),2.0)+(in(n+1,j+1)/h[j]-f[n](j+1)/6.0*h[j])-(in(n+1,j)/h[j]-f[n](j)/6.0*h[j]));
+    accel.insert(accel.begin()+n, f[n](j)/h[j]*(in(0,j+1)-i) + f[n](j+1)/h[j]*(i-in(0,j)));
   }
 }
 

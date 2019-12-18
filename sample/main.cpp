@@ -46,34 +46,37 @@ int main(void){
   in(0,2) = 1.0;
   in(0,3) = 1.5;
 
+  //x
   in(1,0) = sin(in(0,0)*M_PI);
   in(1,1) = sin(in(0,1)*M_PI);
   in(1,2) = sin(in(0,2)*M_PI);
   in(1,3) = sin(in(0,3)*M_PI);
 
+  //y
   in(2,0) = cos(in(0,0)*M_PI);
   in(2,1) = cos(in(0,1)*M_PI);
   in(2,2) = cos(in(0,2)*M_PI);
   in(2,3) = cos(in(0,3)*M_PI);
 
+  //z
   in(3,0) = exp(in(0,0)*M_PI);
   in(3,1) = exp(in(0,1)*M_PI);
   in(3,2) = exp(in(0,2)*M_PI);
   in(3,3) = exp(in(0,3)*M_PI);
 
   double div = 100.0;
-  
+
   // cspline
   Spline sp;
   sp.cspline(in);
   std::ofstream my_file("cspline.csv");
   for(double i = in(0,0); i < in(0,in.getCols()-1); i+=in(0,in.getCols()-1)/div){
     sp.calc_point(i, in);
-    my_file<<sp.point[0]<<"  "<<sp.point[1]<<"  "<<sp.point[2]<<"\n";
+    my_file<<sp.point[0]<<"  "<<sp.point[1]<<"  "<<sp.point[2]<<"  "<<sp.velocity[0]<<"  "<<sp.velocity[1]<<"  "<<sp.velocity[2]<<"  "<<sp.accel[0]<<"  "<<sp.accel[1]<<"  "<<sp.accel[2]<<"\n";
   }
   my_file.close();
 
-  //bspline
+  // bspline
   my_file.open("bspline.csv");
   int k = 3;//degree
   sp.bspline(in, k);
@@ -85,6 +88,6 @@ int main(void){
   my_file.close();
 
   std::cout<<"DONE"<<std::endl;
-  std::cout<<"Try: gnuplot> splot \"cspline.csv\" u 1:2:3 w l"<<std::endl;
+  std::cout<<"Try: gnuplot> splot \"cspline.csv\" u 1:2:3 w l, \"cspline.csv\" u 4:5:6 w l, \"cspline.csv\" u 7:8:9 w l"<<std::endl;
   std::cout<<"     gnuplot> plot \"bspline.csv\" w l"<<std::endl;
 }
