@@ -1,11 +1,11 @@
 /*! @file sample/main.cpp
  *  @version 1.0.0
- *  @date Dec 18 2019
+ *  @date Jan 18 2020
  *
  *  @brief
- *  This example shows how to create a cubic pline on R^3 and bspline on R^2
+ *  This example shows how to create a cubic spline on R^3 and bspline on R^2
  *
- *  @Copyright (c) 2019 Michael O. Umenyi
+ *  @Copyright (c) 2020 Michael O. Umenyi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ int main(void){
   std::ofstream my_file("cspline.csv");
   for(double i = in(0,0); i < in(0,in.getCols()-1); i+=in(0,in.getCols()-1)/div){
     sp.calc_point(i, in);
-    my_file<<sp.point[0]<<"  "<<sp.point[1]<<"  "<<sp.point[2]<<"  "<<sp.velocity[0]<<"  "<<sp.velocity[1]<<"  "<<sp.velocity[2]<<"  "<<sp.accel[0]<<"  "<<sp.accel[1]<<"  "<<sp.accel[2]<<"\n";
+    my_file<< i<<"  "<<sp.point[0]<<"  "<<sp.point[1]<<"  "<<sp.point[2]<<"  "<<sp.velocity[0]<<"  "<<sp.velocity[1]<<"  "<<sp.velocity[2]<<"  "<<sp.accel[0]<<"  "<<sp.accel[1]<<"  "<<sp.accel[2]<<"\n";
   }
   my_file.close();
 
@@ -88,6 +88,6 @@ int main(void){
   my_file.close();
 
   std::cout<<"DONE"<<std::endl;
-  std::cout<<"Try: gnuplot> splot \"cspline.csv\" u 1:2:3 w l, \"cspline.csv\" u 4:5:6 w l, \"cspline.csv\" u 7:8:9 w l"<<std::endl;
+  std::cout<<"Try: gnuplot> splot \"cspline.csv\" u 2:3:4 w l, \"cspline.csv\" u 5:6:7 w l, \"cspline.csv\" u 8:9:10 w l"<<std::endl;
   std::cout<<"     gnuplot> plot \"bspline.csv\" w l"<<std::endl;
 }
