@@ -16,7 +16,6 @@ class Spline{
     std::vector<float> accel;
     Spline();
     void cspline(Matrix &in);
-    void cspline2(Matrix &in);
     void bspline(Matrix &in, int k);
     void calc_point(double i, Matrix &in);
     void calc_vec(double u, Matrix &in, Matrix &vec);
@@ -27,39 +26,6 @@ Spline::Spline(){
 }
 
 void Spline::cspline(Matrix &in){//type of matrix is (t,x,y,z..).t()
-  f.clear();
-  int num = in.getRows();
-  TDMA alg;
-  point = std::vector<float>(num);
-  velocity = std::vector<float>(num);
-  accel = std::vector<float>(num);
-  for(int n = 1; n < num; n++){
-  	std::vector<double> A;
-    std::vector<double> B;
-    std::vector<double> C;
-    std::vector<double> D;
-    h.clear();
-    //calculate delta t
-    for(int i = 0; i < in.getCols()-1; i++){
-      h.push_back(in(0,i+1)-in(0,i));
-    }
-    A.push_back(0);
-    B.push_back(0);
-    C.push_back(0);
-    D.push_back(0);
-    A.push_back(0);
-    for(int i = 1; i < h.size(); i++){
-      B.push_back(2*(h[i-1]+h[i]));
-      if(i != h.size()-1)C.push_back(h[i]);
-      if(i>1)A.push_back(h[i-1]);
-      D.push_back(6.0*((in(n,i+1)-in(n,i))/h[i])-6.0*((in(n,i)-in(n,i-1))/h[i-1]));
-    }
-    C.push_back(0);
-    f.push_back(alg.tdma(A,B,C,D));
-  }
-}
-
-void Spline::cspline2(Matrix &in){//type of matrix is (t,x,y,z..).t()
   f.clear();
   int num = in.getRows();
   TDMA alg;
@@ -103,8 +69,12 @@ void Spline::calc_point(double i, Matrix &in){
     }
   }
   for(int n = 0; n < in.getRows()-1; n++){
+    // point.insert(point.begin()+n, f[n](j+1)/(6.0*h[j])*pow((i-in(0,j)),3.0)+f[n](j)/(6.0*h[j])*pow((in(0,j+1)-i),3.0)+(in(n+1,j+1)/h[j]-f[n](j+1)/6.0*h[j])*(i-in(0,j))+(in(n+1,j)/h[j]-f[n](j)/6.0*h[j])*(in(0,j+1)-i));
     point.insert(point.begin()+n, f[n](j)/(6.0*h[j])*pow((i-in(0,j-1)),3.0)+f[n](j-1)/(6.0*h[j])*pow((in(0,j)-i),3.0)+(in(n+1,j)/h[j]-f[n](j)/6.0*h[j])*(i-in(0,j-1))+(in(n+1,j-1)/h[j]-f[n](j-1)/6.0*h[j])*(in(0,j)-i));
+    // if(n == 0 && j==0 && i==in(0,j))std::cout<<"Velocity: "<<(in(n+1,j+1)/h[j])<<"\n";//f[n](j+1)/(2.0*h[j])*pow((i-in(0,j)),2.0)-f[n](j)/(2.0*h[j])*pow((in(0,j+1)-i),2.0)+(in(n+1,j+1)/h[j]-f[n](j+1)/6.0*h[j])-(in(n+1,j)/h[j]-f[n](j)/6.0*h[j])<<"\n";
+    // velocity.insert(velocity.begin()+n, f[n](j+1)/(2.0*h[j])*pow((i-in(0,j)),2.0)-f[n](j)/(2.0*h[j])*pow((in(0,j+1)-i),2.0)+(in(n+1,j+1)/h[j]-f[n](j+1)/6.0*h[j])-(in(n+1,j)/h[j]-f[n](j)/6.0*h[j]));
     velocity.insert(velocity.begin()+n, f[n](j)/(2.0*h[j])*pow((i-in(0,j-1)),2.0)-f[n](j-1)/(2.0*h[j])*pow((in(0,j)-i),2.0)+(in(n+1,j)/h[j]-f[n](j)/6.0*h[j])-(in(n+1,j-1)/h[j]-f[n](j-1)/6.0*h[j]));
+    // accel.insert(accel.begin()+n, f[n](j)/h[j]*(in(0,j+1)-i) + f[n](j+1)/h[j]*(i-in(0,j)));
     accel.insert(accel.begin()+n, f[n](j-1)/h[j]*(in(0,j)-i) + f[n](j)/h[j]*(i-in(0,j-1)));
   }
 }
